@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  # FastAPI Application
+  app:
+    build: .
+    container_name: cite-fix.api
+    env_file:
+      - .env
+    ports:
+      - "1337:8000"
+    depends_on:
+      - mongodb
+      - maildev
+    volumes:
+      - .:/cite-fix
+    command: /cite-fix/server.sh
+    working_dir: /cite-fix
+
+  # MongoDB Database
+  mongodb:
+    image: mongo:latest
+    container_name: cite-fix.mongodb
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - MONGO_INITDB_DATABASE=${MONGO_DATABASE_NAME}
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+  # Web Interface for MongoDB
+  mongo-express:
+    image: mongo-express:latest
+    container_name: cite-fix.mongo-express
+    restart: always
+    ports:
+      - "8081:8081"
+    env_file:
+      - .env
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=${MONGO_USERNAME}
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=${MONGO_PASSWORD}
+      - ME_CONFIG_MONGODB_SERVER=${MONGO_HOST}
+    depends_on:
+      - mongodb
+
+  # MailDev SMTP Server
+  maildev:
+    image: maildev/maildev:latest
+    container_name: cite-fix.maildev
+    ports:
+      - "1080:1080"  # Web interface
+      - "1025:1025"  # SMTP port
+    env_file:
+      - .env
+    environment:
+      - MAILDEV_INCOMING_USER=${EMAIL_USERNAME}
+      - MAILDEV_INCOMING_PASS=${EMAIL_PASSWORD}
+    restart: always
+
+volumes:
+  mongodb_data:
