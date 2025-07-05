@@ -1,9 +1,10 @@
-from typing import List, Optional
+from typing import List
 
 # from app.services.report import ReportService, get_report_service
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
 
 from app.api.deps import get_current_active_user
+from app.api.v1.routes.utils import response_helper
 from app.api.v1.services.services import ReportService, get_report_service
 from app.db.models.reports import (
     ReportCreate,
@@ -24,11 +25,12 @@ async def create_report(
         report_service: ReportService = Depends(get_report_service)
 ):
     """Create a new report"""
-    return await report_service.create_report(
+    report = await report_service.create_report(
         report_create,
         str(current_user.id),
         # media_files
     )
+    return response_helper(report)
 
 
 @router.get("/{report_id}", response_model=ReportPublic)

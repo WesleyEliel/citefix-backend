@@ -4,6 +4,7 @@ from datetime import timedelta
 from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from fastapi.security import OAuth2PasswordRequestForm
 
+from app.api.v1.routes.utils import response_helper
 from app.api.v1.services.auth import AuthService, get_auth_service
 from app.api.v1.services.email import EmailService, get_email_service
 from app.core.configs import settings
@@ -15,10 +16,6 @@ from app.db.models.users import UserPublic, UserCreate
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
-
-
-def response_helper(response):
-    return {"_id": response.id, **response.dict()}
 
 
 @router.post("/register", response_model=UserPublic)
