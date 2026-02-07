@@ -22,6 +22,10 @@ RUN apt-get update && \
 #    chmod +x server.sh
 
 
+RUN pwd && ls
+
+
+
 USER app
 
 COPY . /cite-fix

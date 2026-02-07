@@ -83,7 +83,7 @@ async def refresh_access_token(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    user = await user_manager.get_by_username(username)
+    user = await user_manager.get_by_email(username)
     if not user or not user.is_active:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -91,7 +91,7 @@ async def refresh_access_token(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    return await auth_service.create_tokens(user.username)
+    return await auth_service.create_tokens(user.email)
 
 
 @router.post("/password-reset/request")

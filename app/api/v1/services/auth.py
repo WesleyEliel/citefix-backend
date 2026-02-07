@@ -79,6 +79,7 @@ class AuthService:
     def verify_email_token(token: str) -> Optional[str]:
         try:
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ENCRYPTION_ALGORITHM])
+            payload
             if payload.get("purpose") != "verify_email":
                 return None
             email: str = payload.get("sub")
